@@ -15,10 +15,13 @@ namespace MicroUIDemo
         private List<float> vboList;
         private List<uint> eboList;
 
+        private List<MicroUICall> _calls;
+
         public MicroUIRenderer()
         {
             vboList = new List<float>();
             eboList = new List<uint>();
+            _calls = new List<MicroUICall>();
 
             vao =  GL.GenVertexArray();
             vbo = GL.GenBuffer();
@@ -32,18 +35,6 @@ namespace MicroUIDemo
             GL.DeleteVertexArray(vao);
         }
 
-        public void AddVertex(float x, float y)
-        {
-            vboList.Add(x);
-            vboList.Add(y);
-            uint elements = (uint)(vboList.Count / 2);  //per 2 elements in vbo we have 1 element (vertex) in ebo
-            eboList.Add(elements);
-        }
-        public void AddTriangle(float x1, float y1, float x2, float y2, float x3, float y3)
-        {
-            
-        }
-
         public void Flush()
         {
             GL.BindVertexArray(vao);
@@ -53,10 +44,46 @@ namespace MicroUIDemo
             GL.VertexAttribPointer(0, 2, VertexAttribPointerType.Float, false, 2 * sizeof(float), 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
             GL.BufferData(BufferTarget.ElementArrayBuffer, eboList.Count * sizeof(uint), eboList.ToArray(), BufferUsageHint.DynamicDraw);
-            GL.DrawElements(BeginMode.LineLoop, eboList.Count, DrawElementsType.UnsignedInt, 0);
+
+            foreach(var call in _calls)
+            {
+                if (call.type == PathType.LINE)
+                {
+                    BeginMode mode = call.convex ? BeginMode.LineLoop : BeginMode.LineStrip;
+                    GL.DrawElements(mode, call.length, DrawElementsType.UnsignedInt, call.offset * sizeof(uint));
+                }
+                else
+                {
+                    GL.DrawArrays(PrimitiveType.Triangles, call.offset, call.length);
+                }
+
+            }
 
             vboList.Clear();
             eboList.Clear();
+            _calls.Clear();
+        }
+
+        public void RenderStroke(float[] verts, bool convex)
+        {
+            int count = verts.Length;
+            MicroUICall call = new MicroUICall();
+            call.type = PathType.LINE;
+            vboList.AddRange(verts);
+            call.offset = eboList.Count;
+            call.length = count / 2;
+            call.convex = convex;
+            int index = call.offset;
+            for(int i = 0; i < call.length; i++)
+            {
+                eboList.Add((uint)index);
+                index++;
+            }
+            _calls.Add(call);
+        }
+
+        public void RenderFill()
+        {
         }
     }
 }
