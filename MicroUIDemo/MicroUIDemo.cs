@@ -60,6 +60,9 @@ namespace MicroUIDemo
             microUI.BeginPath(PathType.LINE);
             microUI.Rectangle(1.0f, 0.0f, 100.0f, 100.0f);
 
+            microUI.BeginPath(PathType.LINE);
+            microUI.Rectangle(100.0f, 400.0f, 100.0f, 100.0f);
+
             microUI.End();
 
             GL.UseProgram(colorShaderDesc.id);
