@@ -2,7 +2,7 @@
 {
     public enum PathType
     {
-        LINE,   //draw lines
+        LINE,   //draw lines (stroke)
         FILL    //draw triangles (textured or colored)
     }
 }

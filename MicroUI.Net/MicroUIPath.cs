@@ -5,5 +5,6 @@
         public PathType type;
         public int start;
         public int count;
+        public bool convex;
     }
 }
