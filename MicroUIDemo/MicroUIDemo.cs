@@ -26,6 +26,8 @@ namespace MicroUIDemo
 
             microUI = new MicroUI();
             microUI.Renderer = new MicroUIRenderer();
+
+            VSync = VSyncMode.On;
         }
 
         protected override void OnLoad()
@@ -59,9 +61,17 @@ namespace MicroUIDemo
 
             microUI.BeginPath(PathType.LINE);
             microUI.Rectangle(1.0f, 0.0f, 100.0f, 100.0f);
+            microUI.Stroke();
 
             microUI.BeginPath(PathType.LINE);
             microUI.Rectangle(100.0f, 400.0f, 100.0f, 100.0f);
+            microUI.Stroke();
+
+            microUI.BeginPath(PathType.LINE);
+            microUI.MoveTo(400.0f, 400.0f);
+            microUI.LineTo(500.0f, 400.0f);
+            microUI.LineTo(500.0f, 500.0f);
+            microUI.Stroke();
 
             microUI.End();
 
@@ -85,19 +95,19 @@ namespace MicroUIDemo
             int vsId = GL.CreateShader(ShaderType.VertexShader);
             GL.ShaderSource(vsId, vsSource);
             GL.CompileShader(vsId);
-            Console.WriteLine($"Vertex log: {GL.GetShaderInfoLog(vsId)}");
+            //Console.WriteLine($"Vertex log: {GL.GetShaderInfoLog(vsId)}");
 
             string fsSource = File.ReadAllText(shaderDesc.fsPath);
             int fsId = GL.CreateShader(ShaderType.FragmentShader);
             GL.ShaderSource(fsId, fsSource);
             GL.CompileShader(fsId);
-            Console.WriteLine($"Fragment log: {GL.GetShaderInfoLog(fsId)}");
+            //Console.WriteLine($"Fragment log: {GL.GetShaderInfoLog(fsId)}");
 
             shaderDesc.id = GL.CreateProgram();
             GL.AttachShader(shaderDesc.id, vsId);
             GL.AttachShader(shaderDesc.id, fsId);
             GL.LinkProgram(shaderDesc.id);
-            Console.WriteLine($"Program log: {GL.GetProgramInfoLog(shaderDesc.id)}");
+            //Console.WriteLine($"Program log: {GL.GetProgramInfoLog(shaderDesc.id)}");
         }
     }
 }

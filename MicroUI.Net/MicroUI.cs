@@ -31,10 +31,10 @@ namespace MicroUIDotNet
                 switch(path.type)
                 {
                     case PathType.LINE:
-                        Stroke(path);
+                        RenderStroke(path);
                         break;
                     case PathType.FILL:
-                        Fill(path);
+                        RenderFill(path);
                         break;
                     default:
                         break;
@@ -42,14 +42,6 @@ namespace MicroUIDotNet
             }
         }
 
-        public bool BeginWindow()
-        {
-            return true;
-        }
-
-        public void EndWindow()
-        {
-        }
 
         public void MoveTo(float x, float y)
         {
@@ -63,23 +55,31 @@ namespace MicroUIDotNet
 
         public void Rectangle(float x, float y, float w, float h)
         {
-            _currentPath.start = commands.Count;
             MoveTo(x, y);
             LineTo(x + w, y);
             LineTo(x + w, y + h);
             LineTo(x, y + h);
-            commands.Add((float)Commands.CLOSE);
             _currentPath.convex = true;
-            _currentPath.count =  (commands.Count - 1) - _currentPath.start;
-            _pathQueue.Enqueue(_currentPath);
         }
 
         public void BeginPath(PathType pathType)
         {
             _currentPath = new MicroUIPath() { type = pathType };
+            _currentPath.start = commands.Count;
         }
 
-        public void Stroke(MicroUIPath path)
+        public void Stroke()
+        {
+            commands.Add((float)Commands.CLOSE);
+            _currentPath.count = (commands.Count - 1) - _currentPath.start;
+            _pathQueue.Enqueue(_currentPath);
+        }
+
+        public void Fill()
+        {
+        }
+
+        private void RenderStroke(MicroUIPath path)
         {
             int length = path.start + path.count;
             List<float> verts = new List<float>();
@@ -96,7 +96,7 @@ namespace MicroUIDotNet
             Renderer.RenderStroke(verts.ToArray(), path.convex);
         }
 
-        public void Fill(MicroUIPath path)
+        private void RenderFill(MicroUIPath path)
         {
         }
     }
