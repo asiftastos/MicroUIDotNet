@@ -1,4 +1,5 @@
 ﻿using MicroUIDotNet;
+using OpenTK.Mathematics;
 
 namespace MicroUIDemo
 {
@@ -8,5 +9,6 @@ namespace MicroUIDemo
         public int offset;
         public int length;
         public bool convex;
+        public Vector4 color;
     }
 }

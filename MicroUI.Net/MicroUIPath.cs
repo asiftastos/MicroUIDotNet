@@ -1,4 +1,6 @@
-﻿namespace MicroUIDotNet
+﻿using System.Collections.Generic;
+
+namespace MicroUIDotNet
 {
     public struct MicroUIPath
     {
@@ -6,5 +8,7 @@
         public int start;
         public int count;
         public bool convex;
+        public List<float> verts;
+        public MicroUIPaint paint;
     }
 }

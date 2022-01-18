@@ -12,21 +12,9 @@ namespace MicroUIDemo
     internal class MicroUIDemo : GameWindow
     {
         private MicroUI microUI;
-        private ShaderDesc colorShaderDesc;
-        private Matrix4 ortho;
 
         public MicroUIDemo(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
         {
-            colorShaderDesc = new ShaderDesc
-            {
-                Name = "Color",
-                vsPath = "Assets/Shaders/color.vs",
-                fsPath = "Assets/Shaders/color.fs"
-            };
-
-            microUI = new MicroUI();
-            microUI.Renderer = new MicroUIRenderer();
-
             VSync = VSyncMode.On;
         }
 
@@ -34,9 +22,8 @@ namespace MicroUIDemo
         {
             base.OnLoad();
 
-            LoadShader(ref colorShaderDesc);
-
-            ortho = Matrix4.CreateOrthographicOffCenter(0.0f, ClientSize.X, 0.0f, ClientSize.Y, 0.1f, 1.0f);
+            microUI = new MicroUI();
+            microUI.Renderer = new MicroUIRenderer(ClientSize.ToVector2());
         }
 
         protected override void OnClosed()
@@ -71,12 +58,11 @@ namespace MicroUIDemo
             microUI.MoveTo(400.0f, 400.0f);
             microUI.LineTo(500.0f, 400.0f);
             microUI.LineTo(500.0f, 500.0f);
+            microUI.StrokePaint(MicroUIColor.FromRGBA(255, 0, 0, 255));
             microUI.Stroke();
 
             microUI.End();
 
-            GL.UseProgram(colorShaderDesc.id);
-            GL.UniformMatrix4(GL.GetUniformLocation(colorShaderDesc.id, "ortho"), false, ref ortho);
             microUI.Renderer.Flush();
 
             SwapBuffers();
@@ -87,27 +73,6 @@ namespace MicroUIDemo
             base.OnKeyUp(e);
             if(e.Key == Keys.Escape)
                 Close();
-        }
-
-        private void LoadShader(ref ShaderDesc shaderDesc)
-        {
-            string vsSource = File.ReadAllText(shaderDesc.vsPath);
-            int vsId = GL.CreateShader(ShaderType.VertexShader);
-            GL.ShaderSource(vsId, vsSource);
-            GL.CompileShader(vsId);
-            //Console.WriteLine($"Vertex log: {GL.GetShaderInfoLog(vsId)}");
-
-            string fsSource = File.ReadAllText(shaderDesc.fsPath);
-            int fsId = GL.CreateShader(ShaderType.FragmentShader);
-            GL.ShaderSource(fsId, fsSource);
-            GL.CompileShader(fsId);
-            //Console.WriteLine($"Fragment log: {GL.GetShaderInfoLog(fsId)}");
-
-            shaderDesc.id = GL.CreateProgram();
-            GL.AttachShader(shaderDesc.id, vsId);
-            GL.AttachShader(shaderDesc.id, fsId);
-            GL.LinkProgram(shaderDesc.id);
-            //Console.WriteLine($"Program log: {GL.GetProgramInfoLog(shaderDesc.id)}");
         }
     }
 }

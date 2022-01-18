@@ -66,6 +66,8 @@ namespace MicroUIDotNet
         {
             _currentPath = new MicroUIPath() { type = pathType };
             _currentPath.start = commands.Count;
+            _currentPath.paint = new MicroUIPaint();
+            _currentPath.paint.color = MicroUIColor.FromRGBA(255, 255, 255, 255);  //default white
         }
 
         public void Stroke()
@@ -75,6 +77,11 @@ namespace MicroUIDotNet
             _pathQueue.Enqueue(_currentPath);
         }
 
+        public void StrokePaint(MicroUIColor color)
+        {
+            _currentPath.paint.color = color;
+        }
+
         public void Fill()
         {
         }
@@ -82,18 +89,18 @@ namespace MicroUIDotNet
         private void RenderStroke(MicroUIPath path)
         {
             int length = path.start + path.count;
-            List<float> verts = new List<float>();
+            path.verts = new List<float>();
             for (int i = path.start; i < length; i++)
             {
                 Commands cmd = (Commands)commands[i];
                 if (cmd == Commands.CLOSE)
                     break;
 
-                verts.Add(commands[i + 1]);
-                verts.Add(commands[i + 2]);
+                path.verts.Add(commands[i + 1]);
+                path.verts.Add(commands[i + 2]);
                 i += 2;
             }
-            Renderer.RenderStroke(verts.ToArray(), path.convex);
+            Renderer.RenderStroke(path);
         }
 
         private void RenderFill(MicroUIPath path)
